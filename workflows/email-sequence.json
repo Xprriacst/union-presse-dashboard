@@ -1,0 +1,304 @@
+{
+  "name": "Union Presse - Email Sequence",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "union-presse-sequence",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.contact.email }}",
+        "subject": "={{ $json.initial_email.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.initial_email.body.replace(/\\n/g, '<br>') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "send-initial-email",
+      "name": "Send Initial Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "opportunity_id",
+              "value": "={{ $json.opportunity_id }}"
+            },
+            {
+              "name": "status",
+              "value": "initial_sent"
+            },
+            {
+              "name": "sent_at",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "id": "set-status-sent",
+      "name": "Set Status Sent",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "unit": "days",
+        "value": 4
+      },
+      "id": "wait-4-days",
+      "name": "Wait 4 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Webhook Trigger').item.json.pixel_url.replace('/track/', '/track/check/') }}",
+        "options": {}
+      },
+      "id": "check-if-opened",
+      "name": "Check If Opened",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.replied }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-replied",
+      "name": "Already Replied?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook Trigger').item.json.contact.email }}",
+        "subject": "={{ $('Webhook Trigger').item.json.followup_email.subject }}",
+        "emailType": "html",
+        "message": "={{ $('Webhook Trigger').item.json.followup_email.body.replace(/\\n/g, '<br>') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "send-followup",
+      "name": "Send Follow-up",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1560, 400],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "followup_sent"
+            },
+            {
+              "name": "followup_sent_at",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "id": "set-followup-sent",
+      "name": "Set Follow-up Sent",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1780, 400]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "replied_no_followup"
+            }
+          ]
+        }
+      },
+      "id": "set-replied",
+      "name": "Already Replied",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Webhook Trigger').item.json.pixel_url.replace('/track/', '/api/update-status/') }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "opportunity_id",
+              "value": "={{ $('Webhook Trigger').item.json.opportunity_id }}"
+            },
+            {
+              "name": "status",
+              "value": "={{ $json.status }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-dashboard",
+      "name": "Update Dashboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [2000, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Initial Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Initial Email": {
+      "main": [
+        [
+          {
+            "node": "Set Status Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Status Sent": {
+      "main": [
+        [
+          {
+            "node": "Wait 4 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 4 Days": {
+      "main": [
+        [
+          {
+            "node": "Check If Opened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Opened": {
+      "main": [
+        [
+          {
+            "node": "Already Replied?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Replied?": {
+      "main": [
+        [
+          {
+            "node": "Already Replied",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Set Follow-up Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Follow-up Sent": {
+      "main": [
+        [
+          {
+            "node": "Update Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Replied": {
+      "main": [
+        [
+          {
+            "node": "Update Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "union-presse"
+    }
+  ]
+}

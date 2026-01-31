@@ -63,13 +63,34 @@ export default function Dashboard() {
     fetchOpportunities();
   }, []);
 
-  const handleSend = async (data: { opportunityId: string; contactEmail: string; subject: string; body: string }) => {
-    const response = await fetch('/api/send-email', {
+  const handleSend = async (data: {
+    opportunityId: string;
+    contactEmail: string;
+    contactFirstName?: string;
+    contactLastName?: string;
+    company?: string;
+    subject: string;
+    body: string;
+    articleTitle?: string;
+    articleUrl?: string;
+  }) => {
+    const response = await fetch('/api/send-sequence', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        opportunity_id: data.opportunityId,
+        contact_email: data.contactEmail,
+        contact_first_name: data.contactFirstName,
+        contact_last_name: data.contactLastName,
+        company: data.company,
+        email_subject: data.subject,
+        email_body: data.body,
+        article_title: data.articleTitle,
+        article_url: data.articleUrl,
+      }),
     });
-    if (!response.ok) throw new Error('Failed to send email');
+    if (!response.ok) throw new Error('Failed to send sequence');
+    return response.json();
   };
 
   const handleIgnore = async (opportunityId: string) => {

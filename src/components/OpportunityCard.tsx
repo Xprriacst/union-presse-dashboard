@@ -42,7 +42,17 @@ interface Props {
   contact: Contact | null;
   email: Email | null;
   status: 'pending' | 'sent' | 'ignored';
-  onSend: (data: { opportunityId: string; contactEmail: string; subject: string; body: string }) => Promise<void>;
+  onSend: (data: {
+    opportunityId: string;
+    contactEmail: string;
+    contactFirstName?: string;
+    contactLastName?: string;
+    company?: string;
+    subject: string;
+    body: string;
+    articleTitle?: string;
+    articleUrl?: string;
+  }) => Promise<void>;
   onIgnore: (opportunityId: string) => Promise<void>;
 }
 
@@ -79,8 +89,13 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
       await onSend({
         opportunityId: opportunity.id,
         contactEmail: contact.email,
+        contactFirstName: contact.first_name || undefined,
+        contactLastName: contact.last_name || undefined,
+        company: contact.company,
         subject: isEditing ? editedSubject : email.subject,
         body: isEditing ? editedBody : email.body,
+        articleTitle: article.title,
+        articleUrl: article.url,
       });
       setLocalStatus('sent');
     } catch (error) {
@@ -104,9 +119,10 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
       <div className="bg-green-50 border border-green-200 rounded-xl p-6 opacity-75">
         <div className="flex items-center gap-2 text-green-700">
           <CheckCircle className="w-5 h-5" />
-          <span className="font-medium">Email envoyé à {contact?.first_name || ''} {contact?.last_name || ''}</span>
+          <span className="font-medium">Séquence lancée pour {contact?.first_name || ''} {contact?.last_name || ''}</span>
         </div>
         <p className="text-sm text-green-600 mt-1">{article.title}</p>
+        <p className="text-xs text-green-500 mt-2">📧 Email initial envoyé • ⏰ Relance prévue dans 4 jours</p>
       </div>
     );
   }
@@ -258,7 +274,7 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Send className="w-4 h-4" />
-              {isSending ? 'Envoi...' : 'Envoyer'}
+              {isSending ? 'Lancement...' : 'Lancer la séquence'}
             </button>
             <button
               onClick={() => {
