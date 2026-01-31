@@ -25,6 +25,9 @@ interface Contact {
   job_title: string | null;
   company: string;
   linkedin_url: string | null;
+  relevance_score?: number;
+  relevance_reason?: string;
+  is_recommended?: boolean;
 }
 
 interface Email {
@@ -162,12 +165,16 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
 
       {/* Contact */}
       {contact ? (
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <div className={`px-6 py-4 border-b border-gray-100 ${contact.is_recommended ? 'bg-green-50' : 'bg-gray-50'}`}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
+              contact.is_recommended
+                ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                : 'bg-gradient-to-br from-gray-400 to-gray-500'
+            }`}>
               {(contact.first_name?.[0] || '?')}{(contact.last_name?.[0] || '')}
             </div>
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-900">
                   {contact.first_name || ''} {contact.last_name || ''}
@@ -177,12 +184,20 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
                     <User className="w-4 h-4" />
                   </a>
                 )}
+                {contact.is_recommended && (
+                  <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded-full">
+                    Recommandé
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 {contact.job_title && <span>{contact.job_title}</span>}
                 {contact.job_title && <span className="text-gray-300">•</span>}
                 <span>{contact.company}</span>
               </div>
+              {contact.relevance_reason && (
+                <p className="text-xs mt-1 text-gray-600">{contact.relevance_reason}</p>
+              )}
             </div>
           </div>
         </div>

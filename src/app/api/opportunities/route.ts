@@ -258,6 +258,9 @@ export async function GET() {
               job_title: contact.position,
               company: article.publisher,
               linkedin_url: contact.linkedin,
+              relevance_score: contact.relevance_score,
+              relevance_reason: contact.relevance_reason,
+              is_recommended: contact.is_recommended,
             } : null,
             email: {
               subject: email.subject,
