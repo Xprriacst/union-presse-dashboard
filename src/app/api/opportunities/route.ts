@@ -114,78 +114,104 @@ function generateEmailSuggestion(
   contact?: { first_name: string | null; last_name: string | null } | null
 ): { subject: string; body: string } {
   const publisherName = article.publisher;
-  const greeting = contact?.first_name ? `${contact.first_name},` : 'Bonjour,';
+  const firstName = contact?.first_name || '';
+  const greeting = firstName ? `Bonjour ${firstName},` : 'Bonjour,';
 
+  // Structure: Introduction (Je vous contacte car) + Proposition (J'imagine que) + CTA (Est-ce que vous auriez)
   const templates: Record<string, { subject: string; body: string }> = {
     nouvelle_formule: {
-      subject: `Félicitations pour la nouvelle formule de ${publisherName}`,
+      subject: `${publisherName} - nouvelle formule`,
       body: `${greeting}
 
-J'ai vu l'annonce de la nouvelle formule de ${publisherName}. Une refonte éditoriale, c'est toujours un moment clé.
+Je vous contacte car j'ai vu l'annonce de la nouvelle formule de ${publisherName}. Une refonte éditoriale est souvent synonyme de nouveaux process à mettre en place.
 
-Nous accompagnons des éditeurs comme vous pour automatiser les tâches de production répétitives : mise en page, génération de contenus, workflow éditorial.
+J'imagine que vous cherchez à optimiser les workflows de production pour cette nouvelle version — c'est exactement ce sur quoi nous accompagnons les éditeurs de presse : automatisation des mises en page, génération de contenus, workflow éditorial.
 
-Un call de 15 minutes pour en discuter ?
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
 
 Alexandre`,
     },
     lancement: {
-      subject: `${publisherName} - votre nouveau projet`,
+      subject: `${publisherName} - nouveau lancement`,
       body: `${greeting}
 
-Félicitations pour ce nouveau lancement chez ${publisherName}. Créer un nouveau titre demande beaucoup d'énergie.
+Je vous contacte car j'ai appris le lancement de votre nouveau titre chez ${publisherName}. Félicitations !
 
-Nous aidons les éditeurs à gagner du temps sur les tâches répétitives pour se concentrer sur ce qui compte : le contenu.
+J'imagine que la montée en charge de la production va être un enjeu clé dans les prochaines semaines. Nous accompagnons des éditeurs comme vous pour automatiser les tâches répétitives et gagner du temps sur ce qui compte : le contenu.
 
-Intéressé par une démo de 15 minutes ?
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
 
 Alexandre`,
     },
     recrutement: {
-      subject: `Une idée pour ${publisherName}`,
+      subject: `${publisherName} - vos recrutements`,
       body: `${greeting}
 
-J'ai vu que ${publisherName} est en phase de recrutement. Avec de nouvelles équipes à intégrer, l'efficacité opérationnelle devient clé.
+Je vous contacte car j'ai vu que ${publisherName} est en phase de recrutement. Intégrer de nouvelles équipes, c'est toujours un moment clé.
 
-Nous accompagnons des éditeurs pour automatiser prospection et production. Nos clients gagnent en moyenne 2h par jour.
+J'imagine que vous cherchez à maximiser rapidement leur efficacité. Nous accompagnons des éditeurs pour automatiser les tâches répétitives — nos clients gagnent en moyenne 2h par jour et par collaborateur.
 
-Un échange de 15 minutes ?
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
 
 Alexandre`,
     },
     transformation_digitale: {
-      subject: `Transformation digitale de ${publisherName}`,
+      subject: `${publisherName} - transformation digitale`,
       body: `${greeting}
 
-Votre projet de transformation digitale chez ${publisherName} m'a interpellé. C'est le bon moment pour repenser les outils.
+Je vous contacte car votre projet de transformation digitale chez ${publisherName} a retenu mon attention.
 
-Nous avons accompagné des groupes média similaires : automatisation IA, workflows optimisés, gain de productivité mesurable.
+J'imagine que vous êtes en train de repenser vos outils et process. C'est exactement le bon moment pour intégrer de l'automatisation intelligente. Nous avons accompagné des groupes média similaires avec des résultats mesurables.
 
-15 minutes pour vous montrer comment ?
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
 
 Alexandre`,
     },
     evenement: {
-      subject: `${publisherName} et la couverture événementielle`,
+      subject: `${publisherName} - couverture événementielle`,
       body: `${greeting}
 
-Je vois que ${publisherName} prépare une couverture événementielle importante. Ces pics d'activité demandent une organisation sans faille.
+Je vous contacte car j'ai vu que ${publisherName} prépare une couverture événementielle importante.
 
-Nous aidons les rédactions à automatiser les tâches répétitives pour se concentrer sur le terrain.
+J'imagine que ces pics d'activité demandent une organisation sans faille. Nous aidons les rédactions à automatiser les tâches répétitives pour se concentrer sur le terrain et la qualité éditoriale.
 
-Un call pour en discuter ?
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
+
+Alexandre`,
+    },
+    prix_augmentation: {
+      subject: `${publisherName} - évolution tarifaire`,
+      body: `${greeting}
+
+Je vous contacte car j'ai remarqué l'évolution tarifaire de ${publisherName}.
+
+J'imagine que vous cherchez à renforcer la valeur perçue par vos lecteurs. L'automatisation des process permet de réinvestir du temps dans ce qui fait la différence : la qualité du contenu et l'expérience lecteur.
+
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
+
+Alexandre`,
+    },
+    hors_serie: {
+      subject: `${publisherName} - hors-série`,
+      body: `${greeting}
+
+Je vous contacte car j'ai vu la sortie de votre nouveau hors-série chez ${publisherName}.
+
+J'imagine que la production de ces numéros spéciaux mobilise beaucoup de ressources. Nous accompagnons des éditeurs pour automatiser les tâches répétitives et libérer du temps pour la création.
+
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
 
 Alexandre`,
     },
     default: {
-      subject: `Une opportunité pour ${publisherName}`,
+      subject: `${publisherName} - actualités`,
       body: `${greeting}
 
-J'ai lu avec intérêt les dernières actualités de ${publisherName}.
+Je vous contacte car j'ai lu avec intérêt les dernières actualités de ${publisherName}.
 
-Nous accompagnons les éditeurs de presse dans leur transformation : automatisation, IA générative, optimisation des workflows.
+J'imagine que l'optimisation des process est un sujet pour vous. Nous accompagnons les éditeurs de presse dans leur transformation : automatisation, IA générative, optimisation des workflows.
 
-Seriez-vous disponible pour un échange de 15 minutes ?
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
 
 Alexandre`,
     },
