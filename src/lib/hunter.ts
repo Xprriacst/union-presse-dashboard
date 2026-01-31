@@ -15,6 +15,7 @@ export interface ScoredContact extends HunterContact {
   relevance_score: number;
   relevance_reason: string;
   is_recommended: boolean;
+  is_large_company: boolean;
 }
 
 export interface HunterResult {
@@ -123,6 +124,7 @@ function scoreContact(contact: HunterContact, isLargeCompany: boolean): ScoredCo
       relevance_score: 0,
       relevance_reason: '❌ Profil non pertinent pour la vente B2B',
       is_recommended: false,
+      is_large_company: isLargeCompany,
     };
   }
 
@@ -135,6 +137,7 @@ function scoreContact(contact: HunterContact, isLargeCompany: boolean): ScoredCo
         relevance_score: rule.score,
         relevance_reason: `✅ ${rule.reason}`,
         is_recommended: rule.score >= 70,
+        is_large_company: isLargeCompany,
       };
     }
   }
@@ -155,6 +158,7 @@ function scoreContact(contact: HunterContact, isLargeCompany: boolean): ScoredCo
       ? '⚠️ Profil senior mais fonction non identifiée'
       : '⚠️ Pertinence incertaine - vérifier manuellement',
     is_recommended: false,
+    is_large_company: isLargeCompany,
   };
 }
 

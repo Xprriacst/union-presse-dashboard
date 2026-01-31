@@ -261,6 +261,7 @@ export async function GET() {
               relevance_score: contact.relevance_score,
               relevance_reason: contact.relevance_reason,
               is_recommended: contact.is_recommended,
+              is_large_company: contact.is_large_company,
             } : null,
             email: {
               subject: email.subject,

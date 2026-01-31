@@ -28,6 +28,7 @@ interface Contact {
   relevance_score?: number;
   relevance_reason?: string;
   is_recommended?: boolean;
+  is_large_company?: boolean;
 }
 
 interface Email {
@@ -196,7 +197,14 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
                 <span>{contact.company}</span>
               </div>
               {contact.relevance_reason && (
-                <p className="text-xs mt-1 text-gray-600">{contact.relevance_reason}</p>
+                <div className="mt-2 p-2 bg-white/50 rounded text-xs text-gray-600">
+                  <p>{contact.relevance_reason}</p>
+                  <p className="text-gray-400 mt-1">
+                    {contact.is_large_company
+                      ? '🏢 Grand groupe → cible décideur commercial'
+                      : '🏠 Petite structure → cible dirigeant'}
+                  </p>
+                </div>
               )}
             </div>
           </div>
