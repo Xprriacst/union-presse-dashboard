@@ -92,8 +92,8 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
         contactFirstName: contact.first_name || undefined,
         contactLastName: contact.last_name || undefined,
         company: contact.company,
-        subject: isEditing ? editedSubject : email.subject,
-        body: isEditing ? editedBody : email.body,
+        subject: editedSubject,
+        body: editedBody,
         articleTitle: article.title,
         articleUrl: article.url,
       });
@@ -260,9 +260,9 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
               <div className="flex items-center gap-2 text-gray-600 mb-2">
                 <Mail className="w-4 h-4" />
                 <span className="font-medium">Objet:</span>
-                <span>{email.subject}</span>
+                <span>{editedSubject}</span>
               </div>
-              <p className="text-gray-700 whitespace-pre-line text-sm">{email.body}</p>
+              <p className="text-gray-700 whitespace-pre-line text-sm">{editedBody}</p>
             </div>
           )}
 
@@ -276,19 +276,36 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
               <Send className="w-4 h-4" />
               {isSending ? 'Lancement...' : 'Lancer la séquence'}
             </button>
-            <button
-              onClick={() => {
-                if (isEditing) {
-                  setEditedSubject(email.subject);
-                  setEditedBody(email.body);
-                }
-                setIsEditing(!isEditing);
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              <Edit3 className="w-4 h-4" />
-              {isEditing ? 'Annuler' : 'Modifier'}
-            </button>
+            {isEditing ? (
+              <>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  Sauvegarder
+                </button>
+                <button
+                  onClick={() => {
+                    setEditedSubject(email.subject);
+                    setEditedBody(email.body);
+                    setIsEditing(false);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Annuler
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <Edit3 className="w-4 h-4" />
+                Modifier
+              </button>
+            )}
             <button
               onClick={handleIgnore}
               className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"

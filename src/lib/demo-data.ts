@@ -3,6 +3,15 @@
 export const DEMO_DATA = {
   articles: [
     {
+      url: 'https://union-presse.fr/articles/test-magazine-lancement',
+      title: 'Test Magazine lance sa nouvelle formule digitale',
+      summary: 'Test Magazine annonce une refonte complète de son offre digitale avec un investissement massif dans les outils de production automatisée.',
+      publisher: 'Test Magazine',
+      category: 'Lancement',
+      published_date: '2026-01-31',
+      scraped_at: '2026-01-31T10:00:00Z',
+    },
+    {
       url: 'https://union-presse.fr/articles/figaro-recrute',
       title: 'Le Figaro recrute 10 commerciaux pour accélérer sa croissance digitale',
       summary: 'Le groupe de presse cherche à renforcer ses équipes commerciales face à la concurrence accrue sur le marché publicitaire digital. Cette expansion s\'inscrit dans un plan de transformation digitale ambitieux.',
@@ -32,6 +41,16 @@ export const DEMO_DATA = {
   ],
 
   opportunities: [
+    {
+      id: 'opp-test',
+      article_url: 'https://union-presse.fr/articles/test-magazine-lancement',
+      article_title: 'Test Magazine lance sa nouvelle formule digitale',
+      article_publisher: 'Test Magazine',
+      opportunity_type: 'lancement',
+      score: 9,
+      reasoning: 'Lancement digital = besoin d\'automatisation. Prospect test pour valider la séquence email.',
+      detected_at: '2026-01-31T10:05:00Z',
+    },
     {
       id: 'opp-001',
       article_url: 'https://union-presse.fr/articles/figaro-recrute',
@@ -66,6 +85,19 @@ export const DEMO_DATA = {
 
   contacts: [
     {
+      email: 'xisem85454@juhxs.com',
+      first_name: 'Thomas',
+      last_name: 'Durand',
+      job_title: 'Directeur Digital',
+      company: 'Test Magazine',
+      linkedin_url: 'https://linkedin.com/in/thomas-durand',
+      apollo_id: 'apollo_test',
+      relevance_score: 95,
+      relevance_reason: '✅ Direction digitale - décideur stratégique pour l\'automatisation',
+      is_recommended: true,
+      is_large_company: false,
+    },
+    {
       email: 'jean.dupont@lefigaro.fr',
       first_name: 'Jean',
       last_name: 'Dupont',
@@ -95,6 +127,19 @@ export const DEMO_DATA = {
   ],
 
   emails: [
+    {
+      opportunity_id: 'opp-test',
+      subject: 'Test Magazine - votre transformation digitale',
+      body: `Bonjour Thomas,
+
+Je vous contacte car j'ai vu l'annonce du lancement de la nouvelle formule digitale de Test Magazine. Une transformation comme celle-ci nécessite souvent de repenser les process de production.
+
+J'imagine que vous cherchez à optimiser les workflows et automatiser les tâches répétitives. C'est exactement ce sur quoi nous accompagnons les éditeurs de presse : automatisation des mises en page, génération de contenus, workflow éditorial.
+
+Est-ce que vous auriez quelques minutes dans la semaine pour échanger ?
+
+Alexandre`,
+    },
     {
       opportunity_id: 'opp-001',
       subject: 'Une idée pour votre équipe commerciale',
@@ -140,7 +185,7 @@ Alexandre`,
 export function getDemoOpportunities() {
   return DEMO_DATA.opportunities.map(opp => {
     const article = DEMO_DATA.articles.find(a => a.url === opp.article_url);
-    const contact = DEMO_DATA.contacts.find(c => c.company === opp.article_publisher);
+    const contact = DEMO_DATA.contacts.find(c => c.company === opp.article_publisher) as any;
     const email = DEMO_DATA.emails.find(e => e.opportunity_id === opp.id);
 
     return {
@@ -161,7 +206,19 @@ export function getDemoOpportunities() {
         reasoning: opp.reasoning,
         detected_at: opp.detected_at,
       },
-      contact: contact || null,
+      contact: contact ? {
+        email: contact.email,
+        first_name: contact.first_name,
+        last_name: contact.last_name,
+        job_title: contact.job_title,
+        company: contact.company,
+        linkedin_url: contact.linkedin_url,
+        apollo_id: contact.apollo_id,
+        relevance_score: contact.relevance_score,
+        relevance_reason: contact.relevance_reason,
+        is_recommended: contact.is_recommended,
+        is_large_company: contact.is_large_company,
+      } : null,
       email: email ? { subject: email.subject, body: email.body } : null,
       status: 'pending' as const,
     };
