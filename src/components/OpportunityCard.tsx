@@ -192,10 +192,11 @@ export default function OpportunityCard({ article, opportunity, contact, email, 
               {(contact.first_name?.[0] || '?')}{(contact.last_name?.[0] || '')}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-medium text-gray-900">
                   {contact.first_name || ''} {contact.last_name || ''}
                 </span>
+                <span className="text-sm text-gray-500">({contact.email})</span>
                 {contact.linkedin_url && (
                   <a href={contact.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
                     <User className="w-4 h-4" />
